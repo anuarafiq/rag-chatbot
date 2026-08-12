@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm audit *)",
+      "Bash(npm view *)",
+      "Bash(node -e \"const v=JSON.parse\\(require\\('fs'\\).readFileSync\\(0,'utf8'\\)\\); console.log\\(v.filter\\(x=>x.startsWith\\('14.'\\)\\).slice\\(-15\\)\\)\")",
+      "Bash(node -e \"const v=JSON.parse\\(require\\('fs'\\).readFileSync\\(0,'utf8'\\)\\); console.log\\(v.filter\\(x=>/^14\\\\.2\\\\.\\\\d+$/.test\\(x\\)\\).slice\\(-10\\)\\)\")",
+      "Bash(npx prisma *)",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"prisma migrate dev\")",
+      "Bash(node -e ' *)",
+      "Bash(npm run *)",
+      "Bash(disown)",
+      "Bash(curl -sS -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
+      "Read(//tmp/**)",
+      "Bash(curl -sS -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/documents)",
+      "Bash(ls /Users/afiq/GitHub/finlatics-ai-nd/rag-chatbot/*.pdf 2>/dev/null; find ~ -maxdepth 3 -iname \"*.pdf\" 2>/dev/null | head -5)",
+      "Read(//Users/afiq/**)"
+    ]
+  }
+}

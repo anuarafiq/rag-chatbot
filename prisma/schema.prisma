@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // Supabase pooled (pgbouncer) — app runtime
+  directUrl = env("DIRECT_URL")   // Supabase direct — migrations/DDL
+}
+
+enum DocumentStatus {
+  PENDING
+  PROCESSING
+  EMBEDDED
+  FAILED
+}
+
+model Document {
+  id           String         @id @default(cuid())
+  title        String
+  content      String // full extracted PDF text (source PDF is discarded)
+  textHash     String         @unique // sha256(content) — dedup guard
+  status       DocumentStatus @default(PENDING)
+  pageCount    Int?
+  charCount    Int?
+  errorMessage String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  chunks       Chunk[]
+}
+
+model Chunk {
+  id         String   @id @default(cuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunkIndex Int
+  content    String
+  tokenCount Int
+  embedding  Unsupported("vector(1024)")? // 1024 dims = Cohere embed-english-v3.0
+  createdAt  DateTime @default(now())
+
+  @@unique([documentId, chunkIndex])
+  @@index([documentId])
+}
