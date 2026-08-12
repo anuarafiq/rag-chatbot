@@ -1,0 +1,124 @@
+:root {
+  /* Neutrals — cool, low-chroma gray-blue. Paired with the teal accent below. */
+  --color-bg: oklch(0.975 0.004 250);
+  --color-surface: oklch(1 0 0);
+  --color-surface-sunken: oklch(0.96 0.006 250);
+  --color-border: oklch(0.89 0.008 250);
+  --color-border-strong: oklch(0.78 0.012 250);
+
+  --color-text: oklch(0.22 0.015 250);
+  --color-text-secondary: oklch(0.42 0.015 250);
+  --color-text-muted: oklch(0.58 0.012 250);
+  --color-text-on-accent: oklch(0.99 0.005 200);
+
+  /* Accent — muted teal. Primary actions, current selection, in-progress state. */
+  --color-accent: oklch(0.5 0.1 200);
+  --color-accent-hover: oklch(0.44 0.11 200);
+  --color-accent-active: oklch(0.39 0.11 200);
+  --color-accent-subtle: oklch(0.94 0.035 200);
+  --color-accent-text: oklch(0.34 0.09 200);
+
+  /* Semantic */
+  --color-success: oklch(0.55 0.13 155);
+  --color-success-subtle: oklch(0.95 0.045 155);
+  --color-success-text: oklch(0.36 0.1 155);
+
+  --color-warning: oklch(0.64 0.15 70);
+  --color-warning-subtle: oklch(0.95 0.06 80);
+  --color-warning-text: oklch(0.42 0.12 65);
+
+  --color-error: oklch(0.53 0.19 25);
+  --color-error-subtle: oklch(0.96 0.045 20);
+  --color-error-text: oklch(0.42 0.17 25);
+
+  --color-focus-ring: oklch(0.5 0.1 200 / 0.45);
+
+  /* Type */
+  --font-fallback: -apple-system, "Segoe UI", sans-serif;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.125rem;
+
+  /* Space */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-10: 4rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 2px oklch(0.22 0.02 250 / 0.06), 0 1px 1px oklch(0.22 0.02 250 / 0.05);
+  --shadow-md: 0 8px 20px oklch(0.22 0.02 250 / 0.09), 0 2px 6px oklch(0.22 0.02 250 / 0.05);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app-root {
+  font-family: var(--font-plex-sans), var(--font-fallback);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Streaming cursor used at the tail of an in-progress assistant message. */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

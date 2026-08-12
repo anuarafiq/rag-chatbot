@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import ChatMessage from "../../components/ChatMessage";
 import ChunkSourceList from "../../components/ChunkSourceList";
+import StatusBadge from "../../components/StatusBadge";
 import prisma from "../../lib/db";
+import styles from "./[docId].module.css";
 
 export async function getServerSideProps({ params }) {
   const document = await prisma.document.findUnique({ where: { id: params.docId } });
@@ -11,16 +14,33 @@ export async function getServerSideProps({ params }) {
   };
 }
 
+const STATUS_COPY = {
+  PENDING: "This document is queued for embedding. Chat opens up once it's ready.",
+  PROCESSING: "This document is being chunked and embedded right now. Chat opens up once it's ready.",
+  FAILED: "Embedding failed for this document, so it can't be chatted with. Try re-uploading it.",
+};
+
 const ChatDocPage = ({ docId, title, status }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const messagesRef = useRef(null);
+
+  useEffect(() => {
+    messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages]);
 
   if (status !== "EMBEDDED") {
     return (
-      <div>
-        <h1>{title}</h1>
-        <p>Document is {status.toLowerCase()} — chat becomes available once it's fully embedded.</p>
+      <div className={styles.statusPage}>
+        <div className={styles.statusCard}>
+          <StatusBadge status={status} />
+          <h1 className={styles.statusTitle}>{title}</h1>
+          <p className={styles.statusDescription}>{STATUS_COPY[status]}</p>
+          <Link href="/documents" className={styles.backLink}>
+            Back to documents
+          </Link>
+        </div>
       </div>
     );
   }
@@ -73,9 +93,11 @@ const ChatDocPage = ({ docId, title, status }) => {
             const next = [...prev];
             next[next.length - 1] = {
               ...next[next.length - 1],
-              sources: data.sources.map(
-                (s) => `Chunk #${s.chunkIndex} (sim ${s.similarity.toFixed(2)}): "${s.content.slice(0, 120)}…"`
-              ),
+              sources: data.sources.map((s) => ({
+                chunkIndex: s.chunkIndex,
+                similarity: s.similarity,
+                content: s.content.length > 140 ? `${s.content.slice(0, 140)}…` : s.content,
+              })),
             };
             return next;
           });
@@ -93,22 +115,33 @@ const ChatDocPage = ({ docId, title, status }) => {
   };
 
   return (
-    <div>
-      <h1>{title}</h1>
-      {messages.map((m, i) => (
-        <div key={i}>
-          <ChatMessage sender={m.sender} message={m.message} />
-          {m.sources && <ChunkSourceList sources={m.sources} />}
-        </div>
-      ))}
-      <form onSubmit={handleSubmit}>
+    <div className={styles.page}>
+      <div className={styles.docHeader}>
+        <div className={styles.docTitle}>{title}</div>
+      </div>
+
+      <div className={styles.messages} ref={messagesRef}>
+        {messages.length === 0 ? (
+          <div className={styles.emptyState}>Ask a question about this document to get started.</div>
+        ) : (
+          messages.map((m, i) => (
+            <React.Fragment key={i}>
+              <ChatMessage sender={m.sender} message={m.message} streaming={sending && i === messages.length - 1 && m.sender === "Assistant"} />
+              {m.sources ? <ChunkSourceList sources={m.sources} /> : null}
+            </React.Fragment>
+          ))
+        )}
+      </div>
+
+      <form className={styles.inputBar} onSubmit={handleSubmit}>
         <input
+          className={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question about this document"
-          style={{ width: "70%" }}
+          disabled={sending}
         />
-        <button type="submit" disabled={sending}>
+        <button type="submit" className={styles.sendButton} disabled={sending || !input.trim()}>
           Send
         </button>
       </form>
